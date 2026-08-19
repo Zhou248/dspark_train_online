@@ -53,9 +53,12 @@ ALLAVA_JSON=/home/w00608002/models/ALLaVA-4V/allava_laion/ALLaVA-Instruct-LAION-
 ```bash
 TARGET_MODEL=/path/to/model \
 ALLAVA_JSON=/path/to/ALLaVA.mm.json \
-WORK_DIR=/path/to/work \
+ONLINE_WORK_DIR=/path/to/work \
 bash 01_prepare_data.sh
 ```
+
+新项目只接受 `ONLINE_WORK_DIR` 及其他 `ONLINE_*` 路径覆盖，不继承旧离线项目
+导出的 `WORK_DIR/PREPARED_DATA_DIR/HIDDEN_STATES_DIR`，防止覆盖旧训练数据。
 
 ## 3. 16卡分配策略
 
@@ -112,8 +115,9 @@ torch, torch_npu, transformers, datasets, openai, safetensors
 第一次先处理5,000条，验证完整流程：
 
 ```bash
+source ./common_env.sh
 MAX_SAMPLES=5000 bash 01_prepare_data.sh \
-  2>&1 | tee work/logs/prepare_5k.log
+  2>&1 | tee "${LOG_DIR}/prepare_5k.log"
 ```
 
 该步骤会：
@@ -145,7 +149,8 @@ SKIP_INVALID_SOURCE_ROWS=1 MAX_SAMPLES=5000 bash 01_prepare_data.sh
 
 ```bash
 cd /home/z00909726/scripts/qwen36_dspark_online
-bash 03_launch_target_vllm.sh 2>&1 | tee work/logs/target_vllm.log
+source ./common_env.sh
+bash 03_launch_target_vllm.sh 2>&1 | tee "${LOG_DIR}/target_vllm.log"
 ```
 
 稳定配置包括：
@@ -175,7 +180,8 @@ curl http://127.0.0.1:8000/v1/models
 
 ```bash
 cd /home/z00909726/scripts/qwen36_dspark_online
-bash 04_train_online.sh 2>&1 | tee work/logs/train_online.log
+source ./common_env.sh
+bash 04_train_online.sh 2>&1 | tee "${LOG_DIR}/train_online.log"
 ```
 
 核心参数：
@@ -216,7 +222,7 @@ MAX_STEPS=20 bash run_online_training.sh
 也可以使用独立工作目录准备200条数据，完全隔离正式训练产物：
 
 ```bash
-export WORK_DIR=/home/z00909726/scripts/qwen36_dspark_online/smoke
+export ONLINE_WORK_DIR=/home/z00909726/scripts/qwen36_dspark_online/smoke
 MAX_SAMPLES=200 bash 01_prepare_data.sh
 MAX_STEPS=20 bash run_online_training.sh
 ```
@@ -246,7 +252,8 @@ speculative acceptance，后续应使用 target 模型重新生成 assistant res
 先停止 target hidden-state 服务，然后：
 
 ```bash
-bash 05_serve_dspark.sh 2>&1 | tee work/logs/dspark_serve.log
+source ./common_env.sh
+bash 05_serve_dspark.sh 2>&1 | tee "${LOG_DIR}/dspark_serve.log"
 ```
 
 服务默认监听 `8100`，并保持 eager 模式。训练的 `BLOCK_SIZE=7` 必须与推理的
@@ -302,4 +309,4 @@ SEQ_LENGTH=3072
 ### 训练恢复
 
 `scripts/train.py` 默认检查已有 checkpoint 并恢复。若要从头训练，请使用新的
-`WORK_DIR/CKPT_DIR`；不要直接删除仍需保留的 checkpoint。
+`ONLINE_WORK_DIR/ONLINE_CKPT_DIR`；不要直接删除仍需保留的 checkpoint。

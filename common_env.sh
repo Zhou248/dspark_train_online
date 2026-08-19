@@ -9,14 +9,16 @@ export MSPEC_ROOT="${MSPEC_ROOT:-/home/z00909726/msModelSpec-Dev}"
 export TARGET_MODEL="${TARGET_MODEL:-/home/z00909726/weights/Qwen3.6-35B-A3B}"
 export ALLAVA_ROOT="${ALLAVA_ROOT:-/home/w00608002/models/ALLaVA-4V/allava_laion}"
 export ALLAVA_JSON="${ALLAVA_JSON:-${ALLAVA_ROOT}/ALLaVA-Instruct-LAION-4V.mm.json}"
-export WORK_DIR="${WORK_DIR:-/home/z00909726/scripts/qwen36_dspark_online/work}"
-
-export NORMALIZED_DATA="${NORMALIZED_DATA:-${WORK_DIR}/dataset/conversations.jsonl}"
-export PREPARED_DATA_DIR="${PREPARED_DATA_DIR:-${WORK_DIR}/prepared}"
-export DRAFT_CONFIG_DIR="${DRAFT_CONFIG_DIR:-${WORK_DIR}/draft_config}"
-export HIDDEN_STATES_DIR="${HIDDEN_STATES_DIR:-${WORK_DIR}/online_hidden_states}"
-export CKPT_DIR="${CKPT_DIR:-${WORK_DIR}/checkpoints}"
-export LOG_DIR="${LOG_DIR:-${WORK_DIR}/logs}"
+# Use ONLINE_* overrides so variables exported by the older offline workflow
+# cannot redirect this project into qwen36_dspark/work by accident.
+export ONLINE_WORK_DIR="${ONLINE_WORK_DIR:-/home/z00909726/scripts/qwen36_dspark_online/work}"
+export WORK_DIR="${ONLINE_WORK_DIR}"
+export NORMALIZED_DATA="${ONLINE_NORMALIZED_DATA:-${WORK_DIR}/dataset/conversations.jsonl}"
+export PREPARED_DATA_DIR="${ONLINE_PREPARED_DATA_DIR:-${WORK_DIR}/prepared}"
+export DRAFT_CONFIG_DIR="${ONLINE_DRAFT_CONFIG_DIR:-${WORK_DIR}/draft_config}"
+export HIDDEN_STATES_DIR="${ONLINE_HIDDEN_STATES_DIR:-${WORK_DIR}/online_hidden_states}"
+export CKPT_DIR="${ONLINE_CKPT_DIR:-${WORK_DIR}/checkpoints}"
+export LOG_DIR="${ONLINE_LOG_DIR:-${WORK_DIR}/logs}"
 
 # Start with 5k for an end-to-end run. A useful domain drafter normally needs
 # 20k-50k+ high-quality samples; raise this only after the smoke run is stable.
