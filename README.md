@@ -62,35 +62,36 @@ bash 01_prepare_data.sh
 
 ## 3. 16卡分配策略
 
-默认采用稳定优先配置：
+默认配置：
 
 ```text
 NPU 0-3 : target Qwen3.6 vLLM，TP=4
-NPU 8   : DSpark 单进程在线训练
-其余卡 : 预留
+NPU 8-15: DSpark 8进程FSDP训练
+NPU 4-7 : 预留
 ```
 
-这是刻意设计的。在线 DDP 的每个 rank 都会独立向 vLLM 请求 hidden states；
-直接启动8个训练 rank 会形成并发请求，而 Qwen3.6 multimodal + hybrid/Mamba +
-Ascend hidden-state extraction 已观察到并发时可能产生 NaN。先用单训练进程完成
-5k smoke run，再考虑提高吞吐。
+训练必须使用FSDP而不是普通DDP：DDP会在每张卡完整复制模型、参数梯度和优化器
+状态，不能解决单卡OOM；FSDP会将这些状态分片到8张卡。当前项目没有暴露可用的
+sequence-parallel CLI，因此attention activation仍不会自动除以8，必须同时降低
+`MAX_ANCHORS`。
 
-确认连续运行没有 NaN 后，可尝试8路训练：
+默认：
 
 ```bash
-TRAIN_NPUS=8,9,10,11,12,13,14,15 \
-TRAIN_NPROC=8 \
-bash run_online_training.sh
+ONLINE_TRAIN_NPUS=8,9,10,11,12,13,14,15
+ONLINE_TRAIN_NPROC=8
+ONLINE_FSDP_SHARD=1
+ONLINE_MAX_ANCHORS=512
 ```
 
-注意：DDP主要提高吞吐，不减少单卡模型显存。如果单训练卡 OOM，先尝试：
+8个训练rank会产生在线hidden-state请求，但target服务由`max_num_seqs=1`限制为
+单序列调度。先完成20步smoke；若出现NaN，不要继续扩大训练。
+
+如果512 anchors仍然OOM，继续降到256：
 
 ```bash
-MAX_ANCHORS=1024 bash 04_train_online.sh
+ONLINE_MAX_ANCHORS=256 MAX_STEPS=20 bash run_online_training.sh
 ```
-
-不要为了 OOM 直接增加 DDP rank；如 draft 参数本身无法放入单卡，再评估
-`--fsdp-shard`，但应单独验证 NPU/FSDP 兼容性。
 
 ## 4. 安装与环境检查
 
@@ -203,6 +204,8 @@ target layer ids      = 2, 20, 37 (+ final layer 40 on vLLM side)
 block size            = 7
 draft vocabulary      = 32000
 markov rank           = 32
+max anchors           = 512
+distributed           = 8-card FSDP
 loss                  = 0.1 CE + 0.9 TV
 hidden state dtype    = bfloat16
 on_missing            = generate
@@ -304,17 +307,18 @@ python3 06_test_multimodal.py \
 TARGET_NPUS=0,1,2,3,4,5,6,7 TARGET_TP=8 bash 03_launch_target_vllm.sh
 ```
 
-### 训练单卡 OOM
+### 训练OOM
 
-先降低：
+日志中3072 anchors的 eager attention softmax单次申请了32.81 GiB，因此默认已经
+改为8卡FSDP和512 anchors。若仍OOM：
 
 ```bash
-MAX_ANCHORS=1024
-SEQ_LENGTH=3072
+ONLINE_MAX_ANCHORS=256 MAX_STEPS=20 bash run_online_training.sh
 ```
 
-改变 `SEQ_LENGTH` 后要重新 prepare。确认 NPU上的 eager attention 可运行，不要
-直接启用图模式排查训练问题。
+FSDP只分片参数/梯度/优化器，不分片attention矩阵，所以降低anchors仍然必要。
+最后才考虑将`SEQ_LENGTH=3072`并重新prepare。确认NPU上的eager attention可运行，
+不要直接启用图模式排查训练问题。
 
 ### 训练恢复
 

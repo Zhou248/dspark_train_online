@@ -26,11 +26,21 @@ if ! curl -sf "${VLLM_ENDPOINT}/models" >/dev/null 2>&1; then
 fi
 
 echo "Online training NPUs=${TRAIN_NPUS} nproc=${TRAIN_NPROC}"
+echo "Training memory profile: FSDP_SHARD=${FSDP_SHARD} MAX_ANCHORS=${MAX_ANCHORS}"
 echo "Generated hidden states are consumed immediately and deleted."
 TRAIN_LIMIT_ARGS=()
 if [ -n "${MAX_STEPS}" ]; then
     TRAIN_LIMIT_ARGS+=(--max-steps "${MAX_STEPS}")
     echo "Smoke-test limit: MAX_STEPS=${MAX_STEPS}"
+fi
+FSDP_ARGS=()
+if [ "${FSDP_SHARD}" = "1" ]; then
+    if [ "${TRAIN_NPROC}" -lt 2 ]; then
+        echo "FSDP_SHARD=1 requires TRAIN_NPROC >= 2." >&2
+        exit 1
+    fi
+    FSDP_ARGS+=(--fsdp-shard)
+    echo "FSDP parameter/optimizer sharding enabled."
 fi
 cd "${MSPEC_ROOT}"
 ASCEND_RT_VISIBLE_DEVICES="${TRAIN_NPUS}" torchrun \
@@ -73,6 +83,7 @@ ASCEND_RT_VISIBLE_DEVICES="${TRAIN_NPUS}" torchrun \
     --num-workers 1 \
     --prefetch-factor 1 \
     --log-dir "${LOG_DIR}" \
+    "${FSDP_ARGS[@]}" \
     "${TRAIN_LIMIT_ARGS[@]}"
 
 echo "Training complete: ${CKPT_DIR}"

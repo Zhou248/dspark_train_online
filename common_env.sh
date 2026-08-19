@@ -37,19 +37,23 @@ export TARGET_LAYER_IDS="${TARGET_LAYER_IDS:-2 20 37}"
 export NUM_DRAFT_LAYERS="${NUM_DRAFT_LAYERS:-3}"
 export DRAFT_VOCAB_SIZE="${DRAFT_VOCAB_SIZE:-32000}"
 export BLOCK_SIZE="${BLOCK_SIZE:-7}"
-export MAX_ANCHORS="${MAX_ANCHORS:-3072}"
+# Eager DSpark attention at 3072 anchors requested 32.81 GiB for one softmax
+# tensor on A2. 512 keeps the same training objective with a smaller anchor
+# sample per packed batch and is the safe starting point for 4096-token data.
+export MAX_ANCHORS="${ONLINE_MAX_ANCHORS:-512}"
 export MARKOV_RANK="${MARKOV_RANK:-32}"
 export EPOCHS="${EPOCHS:-5}"
 export LR="${LR:-3e-4}"
 export TRAIN_DATA_RATIO="${TRAIN_DATA_RATIO:-0.95}"
 export MAX_STEPS="${MAX_STEPS:-}"
 
-# Stable online profile: TP=4 target on cards 0-3 and one training process on
-# card 8. Multiple DDP ranks produce concurrent online hidden-state requests.
+# Target uses cards 0-3. Training uses cards 8-15 with FSDP so parameters and
+# optimizer state are sharded instead of replicated by DDP.
 export TARGET_NPUS="${TARGET_NPUS:-0,1,2,3}"
 export TARGET_TP="${TARGET_TP:-4}"
-export TRAIN_NPUS="${TRAIN_NPUS:-8}"
-export TRAIN_NPROC="${TRAIN_NPROC:-1}"
+export TRAIN_NPUS="${ONLINE_TRAIN_NPUS:-8,9,10,11,12,13,14,15}"
+export TRAIN_NPROC="${ONLINE_TRAIN_NPROC:-8}"
+export FSDP_SHARD="${ONLINE_FSDP_SHARD:-1}"
 export VLLM_PORT="${VLLM_PORT:-8000}"
 export VLLM_ENDPOINT="${VLLM_ENDPOINT:-http://127.0.0.1:${VLLM_PORT}/v1}"
 export VLLM_MAX_NUM_SEQS="${VLLM_MAX_NUM_SEQS:-1}"
