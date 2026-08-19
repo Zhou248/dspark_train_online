@@ -13,6 +13,9 @@ python3 ./01_normalize_allava.py \
     --input "${ALLAVA_JSON}" \
     --output "${NORMALIZED_DATA}" \
     --max-samples "${MAX_SAMPLES}" \
+    --media-output-dir "${RESIZED_IMAGE_DIR}" \
+    --max-image-pixels "${MAX_IMAGE_PIXELS}" \
+    --max-image-side "${MAX_IMAGE_SIDE}" \
     "${NORMALIZE_ARGS[@]}"
 
 echo "[2/4] Preparing tokens, loss masks, multimodal messages and token frequencies"
@@ -40,4 +43,3 @@ python3 "${SCRIPT_DIR}/02_inspect_prepared_data.py" \
 
 echo "Prepared data: ${PREPARED_DATA_DIR}"
 echo "Draft config: ${DRAFT_CONFIG_DIR}"
-

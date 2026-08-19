@@ -31,7 +31,15 @@ done
 python3 - <<'PY' || failed=1
 import importlib
 
-for name in ("torch", "torch_npu", "transformers", "datasets", "openai", "safetensors"):
+for name in (
+    "torch",
+    "torch_npu",
+    "transformers",
+    "datasets",
+    "openai",
+    "safetensors",
+    "PIL",
+):
     module = importlib.import_module(name)
     print(f"OK   python: {name} {getattr(module, '__version__', '')}")
 PY
@@ -51,4 +59,3 @@ if [ "${failed}" -ne 0 ]; then
     exit 1
 fi
 echo "Environment check passed."
-

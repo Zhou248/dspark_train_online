@@ -5,9 +5,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
+
+from PIL import Image, ImageOps
 
 
 def iter_json_array(path: Path, chunk_size: int = 4 * 1024 * 1024) -> Iterator[dict]:
@@ -157,21 +160,91 @@ def row_media_paths(row: dict[str, Any]) -> Iterator[Path]:
                 yield Path(part["path"])
 
 
+def resize_image(
+    source: Path,
+    destination: Path,
+    max_pixels: int,
+    max_side: int,
+) -> tuple[Path, bool, tuple[int, int], tuple[int, int]]:
+    """Copy an oversized image to a bounded RGB JPEG without touching source."""
+    with Image.open(source) as raw_image:
+        image = ImageOps.exif_transpose(raw_image)
+        original_size = image.size
+        width, height = original_size
+        scale = min(
+            1.0,
+            math.sqrt(max_pixels / max(width * height, 1)),
+            max_side / max(width, height, 1),
+        )
+        if scale >= 1.0:
+            return source, False, original_size, original_size
+
+        target_size = (
+            max(1, round(width * scale)),
+            max(1, round(height * scale)),
+        )
+        image = image.resize(target_size, Image.Resampling.LANCZOS)
+        if image.mode != "RGB":
+            if "A" in image.getbands():
+                background = Image.new("RGB", image.size, "white")
+                background.paste(image, mask=image.getchannel("A"))
+                image = background
+            else:
+                image = image.convert("RGB")
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        image.save(destination, format="JPEG", quality=95, optimize=True)
+        return destination, True, original_size, target_size
+
+
+def bound_row_images(
+    row: dict[str, Any],
+    output_dir: Path,
+    source_index: int,
+    max_pixels: int,
+    max_side: int,
+) -> tuple[int, list[str]]:
+    """Rewrite oversized local image parts to bounded copies."""
+    resized = 0
+    changes = []
+    image_number = 0
+    for turn in row["conversations"]:
+        for part in turn["value"]:
+            if part.get("type") != "image" or not part.get("path"):
+                continue
+            source = Path(part["path"])
+            destination = output_dir / f"sample_{source_index:08d}_{image_number}.jpg"
+            bounded, changed, before, after = resize_image(
+                source, destination, max_pixels, max_side
+            )
+            part["path"] = str(bounded)
+            if changed:
+                resized += 1
+                changes.append(f"{before[0]}x{before[1]}->{after[0]}x{after[1]}")
+            image_number += 1
+    return resized, changes
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--max-samples", type=int)
     parser.add_argument("--skip-invalid", action="store_true")
+    parser.add_argument("--media-output-dir", required=True)
+    parser.add_argument("--max-image-pixels", type=int, default=1_048_576)
+    parser.add_argument("--max-image-side", type=int, default=2048)
     args = parser.parse_args()
 
     source = Path(args.input).resolve()
     output = Path(args.output).resolve()
+    media_output_dir = Path(args.media_output_dir).resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
+    media_output_dir.mkdir(parents=True, exist_ok=True)
 
     written = 0
     skipped = 0
     media_count = 0
+    resized_count = 0
     with output.open("w", encoding="utf-8") as destination:
         for source_index, item in enumerate(iter_json_array(source)):
             if args.max_samples is not None and written >= args.max_samples:
@@ -184,6 +257,16 @@ def main() -> None:
                     raise FileNotFoundError(f"Missing media: {missing[:3]}")
                 if not paths:
                     raise ValueError("No media found in multimodal ALLaVA row")
+                resized, changes = bound_row_images(
+                    row,
+                    media_output_dir,
+                    source_index,
+                    args.max_image_pixels,
+                    args.max_image_side,
+                )
+                resized_count += resized
+                if changes and resized_count <= 20:
+                    print(f"RESIZE source_index={source_index}: {', '.join(changes)}")
             except Exception as exc:  # noqa: BLE001 - optionally skip bad source rows
                 if not args.skip_invalid:
                     raise RuntimeError(f"Invalid source row {source_index}: {exc}") from exc
@@ -195,11 +278,17 @@ def main() -> None:
             written += 1
             media_count += len(paths)
             if written % 1000 == 0:
-                print(f"written={written} skipped={skipped} media={media_count}")
+                print(
+                    f"written={written} skipped={skipped} media={media_count} "
+                    f"resized={resized_count}"
+                )
 
     if written == 0:
         raise RuntimeError("No valid ALLaVA samples were written")
-    print(f"DONE output={output} written={written} skipped={skipped} media={media_count}")
+    print(
+        f"DONE output={output} written={written} skipped={skipped} "
+        f"media={media_count} resized={resized_count}"
+    )
 
 
 if __name__ == "__main__":

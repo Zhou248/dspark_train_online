@@ -26,6 +26,11 @@ export MAX_SAMPLES="${MAX_SAMPLES:-5000}"
 export SEQ_LENGTH="${SEQ_LENGTH:-4096}"
 export PREPROCESS_WORKERS="${PREPROCESS_WORKERS:-8}"
 export MINIMUM_VALID_TOKENS="${MINIMUM_VALID_TOKENS:-16}"
+# Cap source images before prepare_data. At ~1M pixels Qwen's visual token count
+# leaves ample room for text inside SEQ_LENGTH=4096.
+export MAX_IMAGE_PIXELS="${MAX_IMAGE_PIXELS:-1048576}"
+export MAX_IMAGE_SIDE="${MAX_IMAGE_SIDE:-2048}"
+export RESIZED_IMAGE_DIR="${ONLINE_RESIZED_IMAGE_DIR:-${WORK_DIR}/dataset/resized_images}"
 
 # Target hidden-state extraction layers. launch_vllm.py appends final layer 40.
 export TARGET_LAYER_IDS="${TARGET_LAYER_IDS:-2 20 37}"
@@ -62,4 +67,5 @@ export TASK_QUEUE_ENABLE="${TASK_QUEUE_ENABLE:-0}"
 unset HCCL_OP_EXPANSION_MODE || true
 
 mkdir -p "$(dirname "${NORMALIZED_DATA}")" "${PREPARED_DATA_DIR}" \
-    "${DRAFT_CONFIG_DIR}" "${HIDDEN_STATES_DIR}" "${CKPT_DIR}" "${LOG_DIR}"
+    "${DRAFT_CONFIG_DIR}" "${HIDDEN_STATES_DIR}" "${CKPT_DIR}" "${LOG_DIR}" \
+    "${RESIZED_IMAGE_DIR}"

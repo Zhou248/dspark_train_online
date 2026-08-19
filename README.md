@@ -105,7 +105,7 @@ bash 00_check_environment.sh
 脚本假设已经安装并可导入：
 
 ```text
-torch, torch_npu, transformers, datasets, openai, safetensors
+torch, torch_npu, transformers, datasets, openai, safetensors, Pillow
 ```
 
 同时应使用包含 Qwen3.6、DSpark 和 Ascend 适配的 vLLM/vLLM-Ascend 环境。
@@ -125,10 +125,20 @@ MAX_SAMPLES=5000 bash 01_prepare_data.sh \
 1. 流式读取 ALLaVA JSON，避免一次将整个数组载入内存；
 2. 将顶层 `image/images` 与 `<image>` 标记转换为显式本地图片 content part；
 3. 校验图片路径存在；
-4. 使用 target processor 生成 `input_ids`、`loss_mask`、`messages`；
-5. 保存 `token_freq.pt`，供缩减 draft vocabulary 使用；
-6. 生成不含 MRoPE 字段的3层 Qwen3 draft config；
-7. 输出序列长度和有效 assistant token 统计。
+4. 将超过约100万像素或最长边2048的图片等比例缩放到项目工作目录，原图不动；
+5. 使用 target processor 生成 `input_ids`、`loss_mask`、`messages`；
+6. 保存 `token_freq.pt`，供缩减 draft vocabulary 使用；
+7. 生成不含 MRoPE 字段的3层 Qwen3 draft config；
+8. 输出序列长度和有效 assistant token 统计。
+
+Qwen多模态 processor 会将大图展开为大量视觉 token。若日志出现
+`Mismatch in image token count ... Likely due to truncation`，不要直接把训练长度
+提高到16K；默认图片上限用于在 `SEQ_LENGTH=4096` 内为assistant回答保留空间。
+需要调整时使用：
+
+```bash
+MAX_IMAGE_PIXELS=786432 MAX_IMAGE_SIDE=1536 bash 01_prepare_data.sh
+```
 
 默认遇到缺图或格式错误立即停止。若源数据确实包含少量坏行：
 
