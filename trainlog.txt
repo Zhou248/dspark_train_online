@@ -1,0 +1,593 @@
+root@node-5-58:/home/z00909726/dspark_train_online# MAX_STEPS=20 bash run_online_training.sh
+Target vLLM log: /home/z00909726/scripts/qwen36_dspark_online/work/logs/target_vllm_20260819_163914.log
+Waiting for target vLLM at http://127.0.0.1:8000/v1
+Online training NPUs=8,9,10,11,12,13,14,15 nproc=8
+Training memory profile: FSDP_SHARD=1 MAX_ANCHORS=512
+Generated hidden states are consumed immediately and deleted.
+Smoke-test limit: MAX_STEPS=20
+FSDP parameter/optimizer sharding enabled.
+           INFO     get env TERM = xterm-256color                                                                                                                                                                                                                            patch_getenv.py:15
+[16:40:05] INFO     get env RANK = 0                                                                                                                                                                                                                                         patch_getenv.py:15
+           INFO     get env LOCAL_RANK = 0                                                                                                                                                                                                                                   patch_getenv.py:15
+[16:40:06] INFO     Started distributed with local_rank=6, dp_size=8, sp_size=1                                                                                                                                                                                              distributed.py:163
+[16:40:07] INFO     Started distributed with local_rank=2, dp_size=8, sp_size=1                                                                                                                                                                                              distributed.py:163
+[16:40:07] INFO     get env WORLD_SIZE = 8                                                                                                                                                                                                                                   patch_getenv.py:15
+           INFO     get env MASTER_ADDR = node-5-58                                                                                                                                                                                                                          patch_getenv.py:15
+           INFO     get env MASTER_PORT = 33079                                                                                                                                                                                                                              patch_getenv.py:15
+           INFO     get env TORCHELASTIC_USE_AGENT_STORE = True                                                                                                                                                                                                              patch_getenv.py:15
+           INFO     Started distributed with local_rank=0, dp_size=8, sp_size=1                                                                                                                                                                                              distributed.py:163
+[16:40:07] INFO     Started distributed with local_rank=4, dp_size=8, sp_size=1                                                                                                                                                                                              distributed.py:163
+           INFO     Loading vocab mappings from '/home/z00909726/scripts/qwen36_dspark_online/work/prepared/d2t.npy' and '/home/z00909726/scripts/qwen36_dspark_online/work/prepared/t2d.npy'                                                                                      train.py:297
+[16:40:07] INFO     Started distributed with local_rank=3, dp_size=8, sp_size=1                                                                                                                                                                                              distributed.py:163
+[16:40:07] INFO     Started distributed with local_rank=1, dp_size=8, sp_size=1                                                                                                                                                                                              distributed.py:163
+[16:40:07] INFO     Started distributed with local_rank=7, dp_size=8, sp_size=1                                                                                                                                                                                              distributed.py:163
+[16:40:07] INFO     Started distributed with local_rank=5, dp_size=8, sp_size=1                                                                                                                                                                                              distributed.py:163
+           INFO     get env LD_LIBRARY_PATH =                                                                                                                                                                                                                                patch_getenv.py:15
+                    /usr/local/Ascend/cann-9.1.0/lib64:/usr/local/Ascend/cann-9.1.0/runtime/lib64:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver:/usr/local/Ascend/cann-9.1.0/lib64:/usr/local/Ascend/cann-9.1.0/runtime/lib64:/usr/local/Ascen                   
+                    d/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver:/usr/local/Ascend/cann-9.1.0/lib64:/usr/local/Ascend/cann-9.1.0/runtime/lib64:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver:/usr/local/Ascend/nnal/atb/latest/                   
+                    atb/cxx_abi_0/lib:/usr/local/Ascend/nnal/atb/latest/atb/cxx_abi_0/examples:/usr/local/Ascend/nnal/atb/latest/atb/cxx_abi_0/tests/atbopstest:/usr/local/Ascend/ascend-toolkit/latest/tools/aml/lib64:/usr/local/Ascend/ascend-toolkit/latest/tools/aml/li                   
+                    b64/plugin:/usr/local/Ascend/ascend-toolkit/latest/lib64:/usr/local/Ascend/ascend-toolkit/latest/lib64/plugin/opskernel:/usr/local/Ascend/ascend-toolkit/latest/lib64/plugin/nnengine:/usr/local/Ascend/ascend-toolkit/latest/opp/built-in/op_impl/ai_co                   
+                    re/tbe/op_tiling:/usr/local/Ascend/driver/lib64/common/:/usr/local/Ascend/driver/lib64/driver/:/usr/local/Ascend/nnal/atb/latest/atb/cxx_abi_0/lib:/usr/local/Ascend/nnal/atb/latest/atb/cxx_abi_0/examples:/usr/local/Ascend/nnal/atb/latest/atb/cxx_ab                   
+                    i_0/tests/atbopstest:/usr/local/Ascend/ascend-toolkit/latest/tools/aml/lib64:/usr/local/Ascend/ascend-toolkit/latest/tools/aml/lib64/plugin:/usr/local/Ascend/ascend-toolkit/latest/lib64/plugin/nnengine:/usr/local/Ascend/ascend-toolkit/latest/opp/bu                   
+                    ilt-in/op_impl/ai_core/tbe/op_tiling/lib/linux/:/usr/local/Ascend/ascend-toolkit/latest/lib64:/usr/local/Ascend/ascend-toolkit/latest/lib64/plugin/opskernel:/usr/local/Ascend/driver/lib64/driver:/usr/local/Ascend/driver/lib64/common:/usr/local/lib:                   
+                    :/usr/local/Ascend/driver/lib64/driver:/usr/local/Ascend/driver/lib64/common:/usr/local/lib::/usr/local/Ascend/ascend-toolkit/latest/x86_64-linux/devlib                                                                                                                   
+[16:40:08] WARNING  Added <|MASK|> to tokenizer, mask_token_id=248077 (tokenizer len=248078, vocab_size=248320)                                                                                                                                                                     utils.py:49
+2026-08-19 16:40:13.367 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.368 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.369 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.381 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.381 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.382 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.408 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.409 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.409 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.411 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.411 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.412 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.623 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.624 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.624 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.640 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.641 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.641 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.651 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.652 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:13.652 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:14.008 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:14.009 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 16:40:14.009 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
+[16:40:15] INFO     No previous training checkpoint found in '/home/z00909726/scripts/qwen36_dspark_online/work/checkpoints'. Starting fresh training run.                                                                                                                       trainer.py:262
+[16:40:18] INFO     Training epoch 1/5 started                                                                                                                                                                                                                                   trainer.py:642
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 694, in <module>
+[rank7]:     main(TrainConfig.resolve())
+[rank7]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 683, in main
+[rank7]:     trainer.run_training()
+[rank7]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/graceful_shutdown.py", line 118, in wrapper
+[rank7]:     return fn(self, *args, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 643, in run_training
+[rank7]:     self.train_epoch(epoch)
+[rank7]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 446, in train_epoch
+[rank7]:     for local_step_rel, batch in enumerate(train_loader, 1):
+[rank7]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch_npu/profiler/_add_mstx_patch.py", line 28, in wrapper
+[rank7]:     out = func(*args, **kwargs)
+[rank7]:           ^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 741, in __next__
+[rank7]:     data = self._next_data()
+[rank7]:            ^^^^^^^^^^^^^^^^^
+[rank7]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1548, in _next_data
+[rank7]:     return self._process_data(data, worker_id)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1586, in _process_data
+[rank7]:     data.reraise()
+[rank7]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/_utils.py", line 775, in reraise
+[rank7]:     raise exception
+[rank7]: ValueError: Caught ValueError in DataLoader worker process 0.
+[rank7]: Original Traceback (most recent call last):
+[rank7]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/worker.py", line 358, in _worker_loop
+[rank7]:     data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in fetch
+[rank7]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in <listcomp>
+[rank7]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank7]:             ~~~~~~~~~~~~^^^^^
+[rank7]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 166, in __getitem__
+[rank7]:     data = self._get_raw_data(index)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 325, in _get_raw_data
+[rank7]:     loaded_hs = self._maybe_generate_hs(index)
+[rank7]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 297, in _maybe_generate_hs
+[rank7]:     check_hidden_states(loaded_hs, dataset_item["input_ids"].tolist())
+[rank7]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/data_generation/offline.py", line 14, in check_hidden_states
+[rank7]:     raise ValueError("Hidden states contain NaN values")
+[rank7]: ValueError: Hidden states contain NaN values
+
+[rank4]: Traceback (most recent call last):
+[rank4]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 694, in <module>
+[rank4]:     main(TrainConfig.resolve())
+[rank4]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 683, in main
+[rank4]:     trainer.run_training()
+[rank4]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/graceful_shutdown.py", line 118, in wrapper
+[rank4]:     return fn(self, *args, **kwargs)
+[rank4]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 643, in run_training
+[rank4]:     self.train_epoch(epoch)
+[rank4]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 446, in train_epoch
+[rank4]:     for local_step_rel, batch in enumerate(train_loader, 1):
+[rank4]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch_npu/profiler/_add_mstx_patch.py", line 28, in wrapper
+[rank4]:     out = func(*args, **kwargs)
+[rank4]:           ^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 741, in __next__
+[rank4]:     data = self._next_data()
+[rank4]:            ^^^^^^^^^^^^^^^^^
+[rank4]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1548, in _next_data
+[rank4]:     return self._process_data(data, worker_id)
+[rank4]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1586, in _process_data
+[rank4]:     data.reraise()
+[rank4]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/_utils.py", line 775, in reraise
+[rank4]:     raise exception
+[rank4]: ValueError: Caught ValueError in DataLoader worker process 0.
+[rank4]: Original Traceback (most recent call last):
+[rank4]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/worker.py", line 358, in _worker_loop
+[rank4]:     data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+[rank4]:            ^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in fetch
+[rank4]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank4]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in <listcomp>
+[rank4]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank4]:             ~~~~~~~~~~~~^^^^^
+[rank4]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 166, in __getitem__
+[rank4]:     data = self._get_raw_data(index)
+[rank4]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 325, in _get_raw_data
+[rank4]:     loaded_hs = self._maybe_generate_hs(index)
+[rank4]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 297, in _maybe_generate_hs
+[rank4]:     check_hidden_states(loaded_hs, dataset_item["input_ids"].tolist())
+[rank4]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/data_generation/offline.py", line 14, in check_hidden_states
+[rank4]:     raise ValueError("Hidden states contain NaN values")
+[rank4]: ValueError: Hidden states contain NaN values
+
+[rank6]: Traceback (most recent call last):
+[rank6]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 694, in <module>
+[rank6]:     main(TrainConfig.resolve())
+[rank6]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 683, in main
+[rank6]:     trainer.run_training()
+[rank6]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/graceful_shutdown.py", line 118, in wrapper
+[rank6]:     return fn(self, *args, **kwargs)
+[rank6]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 643, in run_training
+[rank6]:     self.train_epoch(epoch)
+[rank6]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 446, in train_epoch
+[rank6]:     for local_step_rel, batch in enumerate(train_loader, 1):
+[rank6]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch_npu/profiler/_add_mstx_patch.py", line 28, in wrapper
+[rank6]:     out = func(*args, **kwargs)
+[rank6]:           ^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 741, in __next__
+[rank6]:     data = self._next_data()
+[rank6]:            ^^^^^^^^^^^^^^^^^
+[rank6]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1548, in _next_data
+[rank6]:     return self._process_data(data, worker_id)
+[rank6]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1586, in _process_data
+[rank6]:     data.reraise()
+[rank6]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/_utils.py", line 775, in reraise
+[rank6]:     raise exception
+[rank6]: ValueError: Caught ValueError in DataLoader worker process 0.
+[rank6]: Original Traceback (most recent call last):
+[rank6]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/worker.py", line 358, in _worker_loop
+[rank6]:     data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+[rank6]:            ^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in fetch
+[rank6]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank6]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in <listcomp>
+[rank6]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank6]:             ~~~~~~~~~~~~^^^^^
+[rank6]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 166, in __getitem__
+[rank6]:     data = self._get_raw_data(index)
+[rank6]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 325, in _get_raw_data
+[rank6]:     loaded_hs = self._maybe_generate_hs(index)
+[rank6]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 297, in _maybe_generate_hs
+[rank6]:     check_hidden_states(loaded_hs, dataset_item["input_ids"].tolist())
+[rank6]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/data_generation/offline.py", line 14, in check_hidden_states
+[rank6]:     raise ValueError("Hidden states contain NaN values")
+[rank6]: ValueError: Hidden states contain NaN values
+
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 694, in <module>
+[rank2]:     main(TrainConfig.resolve())
+[rank2]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 683, in main
+[rank2]:     trainer.run_training()
+[rank2]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/graceful_shutdown.py", line 118, in wrapper
+[rank2]:     return fn(self, *args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 643, in run_training
+[rank2]:     self.train_epoch(epoch)
+[rank2]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 446, in train_epoch
+[rank2]:     for local_step_rel, batch in enumerate(train_loader, 1):
+[rank2]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch_npu/profiler/_add_mstx_patch.py", line 28, in wrapper
+[rank2]:     out = func(*args, **kwargs)
+[rank2]:           ^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 741, in __next__
+[rank2]:     data = self._next_data()
+[rank2]:            ^^^^^^^^^^^^^^^^^
+[rank2]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1548, in _next_data
+[rank2]:     return self._process_data(data, worker_id)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1586, in _process_data
+[rank2]:     data.reraise()
+[rank2]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/_utils.py", line 775, in reraise
+[rank2]:     raise exception
+[rank2]: ValueError: Caught ValueError in DataLoader worker process 0.
+[rank2]: Original Traceback (most recent call last):
+[rank2]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/worker.py", line 358, in _worker_loop
+[rank2]:     data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in fetch
+[rank2]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in <listcomp>
+[rank2]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank2]:             ~~~~~~~~~~~~^^^^^
+[rank2]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 166, in __getitem__
+[rank2]:     data = self._get_raw_data(index)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 325, in _get_raw_data
+[rank2]:     loaded_hs = self._maybe_generate_hs(index)
+[rank2]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 297, in _maybe_generate_hs
+[rank2]:     check_hidden_states(loaded_hs, dataset_item["input_ids"].tolist())
+[rank2]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/data_generation/offline.py", line 14, in check_hidden_states
+[rank2]:     raise ValueError("Hidden states contain NaN values")
+[rank2]: ValueError: Hidden states contain NaN values
+
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 694, in <module>
+[rank1]:     main(TrainConfig.resolve())
+[rank1]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 683, in main
+[rank1]:     trainer.run_training()
+[rank1]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/graceful_shutdown.py", line 118, in wrapper
+[rank1]:     return fn(self, *args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 643, in run_training
+[rank1]:     self.train_epoch(epoch)
+[rank1]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 446, in train_epoch
+[rank1]:     for local_step_rel, batch in enumerate(train_loader, 1):
+[rank1]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch_npu/profiler/_add_mstx_patch.py", line 28, in wrapper
+[rank1]:     out = func(*args, **kwargs)
+[rank1]:           ^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 741, in __next__
+[rank1]:     data = self._next_data()
+[rank1]:            ^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1548, in _next_data
+[rank1]:     return self._process_data(data, worker_id)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1586, in _process_data
+[rank1]:     data.reraise()
+[rank1]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/_utils.py", line 775, in reraise
+[rank1]:     raise exception
+[rank1]: ValueError: Caught ValueError in DataLoader worker process 0.
+[rank1]: Original Traceback (most recent call last):
+[rank1]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/worker.py", line 358, in _worker_loop
+[rank1]:     data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in fetch
+[rank1]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in <listcomp>
+[rank1]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank1]:             ~~~~~~~~~~~~^^^^^
+[rank1]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 166, in __getitem__
+[rank1]:     data = self._get_raw_data(index)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 325, in _get_raw_data
+[rank1]:     loaded_hs = self._maybe_generate_hs(index)
+[rank1]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 297, in _maybe_generate_hs
+[rank1]:     check_hidden_states(loaded_hs, dataset_item["input_ids"].tolist())
+[rank1]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/data_generation/offline.py", line 14, in check_hidden_states
+[rank1]:     raise ValueError("Hidden states contain NaN values")
+[rank1]: ValueError: Hidden states contain NaN values
+
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 694, in <module>
+[rank3]:     main(TrainConfig.resolve())
+[rank3]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 683, in main
+[rank3]:     trainer.run_training()
+[rank3]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/graceful_shutdown.py", line 118, in wrapper
+[rank3]:     return fn(self, *args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 643, in run_training
+[rank3]:     self.train_epoch(epoch)
+[rank3]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 446, in train_epoch
+[rank3]:     for local_step_rel, batch in enumerate(train_loader, 1):
+[rank3]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch_npu/profiler/_add_mstx_patch.py", line 28, in wrapper
+[rank3]:     out = func(*args, **kwargs)
+[rank3]:           ^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 741, in __next__
+[rank3]:     data = self._next_data()
+[rank3]:            ^^^^^^^^^^^^^^^^^
+[rank3]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1548, in _next_data
+[rank3]:     return self._process_data(data, worker_id)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1586, in _process_data
+[rank3]:     data.reraise()
+[rank3]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/_utils.py", line 775, in reraise
+[rank3]:     raise exception
+[rank3]: ValueError: Caught ValueError in DataLoader worker process 0.
+[rank3]: Original Traceback (most recent call last):
+[rank3]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/worker.py", line 358, in _worker_loop
+[rank3]:     data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in fetch
+[rank3]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in <listcomp>
+[rank3]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank3]:             ~~~~~~~~~~~~^^^^^
+[rank3]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 166, in __getitem__
+[rank3]:     data = self._get_raw_data(index)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 325, in _get_raw_data
+[rank3]:     loaded_hs = self._maybe_generate_hs(index)
+[rank3]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 297, in _maybe_generate_hs
+[rank3]:     check_hidden_states(loaded_hs, dataset_item["input_ids"].tolist())
+[rank3]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/data_generation/offline.py", line 14, in check_hidden_states
+[rank3]:     raise ValueError("Hidden states contain NaN values")
+[rank3]: ValueError: Hidden states contain NaN values
+
+[rank5]: Traceback (most recent call last):
+[rank5]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 694, in <module>
+[rank5]:     main(TrainConfig.resolve())
+[rank5]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 683, in main
+[rank5]:     trainer.run_training()
+[rank5]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/graceful_shutdown.py", line 118, in wrapper
+[rank5]:     return fn(self, *args, **kwargs)
+[rank5]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 643, in run_training
+[rank5]:     self.train_epoch(epoch)
+[rank5]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 446, in train_epoch
+[rank5]:     for local_step_rel, batch in enumerate(train_loader, 1):
+[rank5]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch_npu/profiler/_add_mstx_patch.py", line 28, in wrapper
+[rank5]:     out = func(*args, **kwargs)
+[rank5]:           ^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 741, in __next__
+[rank5]:     data = self._next_data()
+[rank5]:            ^^^^^^^^^^^^^^^^^
+[rank5]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1548, in _next_data
+[rank5]:     return self._process_data(data, worker_id)
+[rank5]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1586, in _process_data
+[rank5]:     data.reraise()
+[rank5]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/_utils.py", line 775, in reraise
+[rank5]:     raise exception
+[rank5]: ValueError: Caught ValueError in DataLoader worker process 0.
+[rank5]: Original Traceback (most recent call last):
+[rank5]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/worker.py", line 358, in _worker_loop
+[rank5]:     data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+[rank5]:            ^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in fetch
+[rank5]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank5]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in <listcomp>
+[rank5]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank5]:             ~~~~~~~~~~~~^^^^^
+[rank5]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 166, in __getitem__
+[rank5]:     data = self._get_raw_data(index)
+[rank5]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 325, in _get_raw_data
+[rank5]:     loaded_hs = self._maybe_generate_hs(index)
+[rank5]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 297, in _maybe_generate_hs
+[rank5]:     check_hidden_states(loaded_hs, dataset_item["input_ids"].tolist())
+[rank5]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/data_generation/offline.py", line 14, in check_hidden_states
+[rank5]:     raise ValueError("Hidden states contain NaN values")
+[rank5]: ValueError: Hidden states contain NaN values
+
+Epoch 0   0%                                                                                                                                                                                                                                              0/127  [ 0:00:35 < -:--:-- , ? it/s ]
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 694, in <module>
+[rank0]:     main(TrainConfig.resolve())
+[rank0]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 683, in main
+[rank0]:     trainer.run_training()
+[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/graceful_shutdown.py", line 118, in wrapper
+[rank0]:     return fn(self, *args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 643, in run_training
+[rank0]:     self.train_epoch(epoch)
+[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 446, in train_epoch
+[rank0]:     for local_step_rel, batch in enumerate(train_loader, 1):
+[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/tqdm/std.py", line 1187, in __iter__
+[rank0]:     for obj in iterable:
+[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch_npu/profiler/_add_mstx_patch.py", line 28, in wrapper
+[rank0]:     out = func(*args, **kwargs)
+[rank0]:           ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 741, in __next__
+[rank0]:     data = self._next_data()
+[rank0]:            ^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1548, in _next_data
+[rank0]:     return self._process_data(data, worker_id)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1586, in _process_data
+[rank0]:     data.reraise()
+[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/_utils.py", line 775, in reraise
+[rank0]:     raise exception
+[rank0]: ValueError: Caught ValueError in DataLoader worker process 0.
+[rank0]: Original Traceback (most recent call last):
+[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/worker.py", line 358, in _worker_loop
+[rank0]:     data = fetcher.fetch(index)  # type: ignore[possibly-undefined]
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in fetch
+[rank0]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in <listcomp>
+[rank0]:     data = [self.dataset[idx] for idx in possibly_batched_index]
+[rank0]:             ~~~~~~~~~~~~^^^^^
+[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 166, in __getitem__
+[rank0]:     data = self._get_raw_data(index)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 325, in _get_raw_data
+[rank0]:     loaded_hs = self._maybe_generate_hs(index)
+[rank0]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/data.py", line 297, in _maybe_generate_hs
+[rank0]:     check_hidden_states(loaded_hs, dataset_item["input_ids"].tolist())
+[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/data_generation/offline.py", line 14, in check_hidden_states
+[rank0]:     raise ValueError("Hidden states contain NaN values")
+[rank0]: ValueError: Hidden states contain NaN values
+
+[ERROR] 2026-08-19-16:40:54 (PID:310643, Device:7, RankID:-1) ERR99999 UNKNOWN applicaiton exception
+[ERROR] 2026-08-19-16:40:55 (PID:310642, Device:6, RankID:-1) ERR99999 UNKNOWN applicaiton exception
+[ERROR] 2026-08-19-16:40:55 (PID:310640, Device:4, RankID:-1) ERR99999 UNKNOWN applicaiton exception
+[ERROR] 2026-08-19-16:40:56 (PID:310638, Device:2, RankID:-1) ERR99999 UNKNOWN applicaiton exception
+[ERROR] 2026-08-19-16:40:56 (PID:310637, Device:1, RankID:-1) ERR99999 UNKNOWN applicaiton exception
+/usr/local/python3.11.10/lib/python3.11/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+[ERROR] 2026-08-19-16:40:57 (PID:310639, Device:3, RankID:-1) ERR99999 UNKNOWN applicaiton exception
+W0819 16:40:57.533000 310608 site-packages/torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 310636 closing signal SIGTERM
+W0819 16:40:57.534000 310608 site-packages/torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 310637 closing signal SIGTERM
+W0819 16:40:57.534000 310608 site-packages/torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 310638 closing signal SIGTERM
+W0819 16:40:57.534000 310608 site-packages/torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 310639 closing signal SIGTERM
+W0819 16:40:57.534000 310608 site-packages/torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 310640 closing signal SIGTERM
+W0819 16:40:57.534000 310608 site-packages/torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 310641 closing signal SIGTERM
+W0819 16:40:57.534000 310608 site-packages/torch/distributed/elastic/multiprocessing/api.py:1010] Sending process 310642 closing signal SIGTERM
+[16:40:57] WARNING  Received SIGTERM — interrupting training to save checkpoint. Send again to force immediate exit.                                                                                                                                                    graceful_shutdown.py:90
+Exception ignored in atexit callback: <function _MultiProcessingDataLoaderIter._clean_up_worker at 0x7efcc85040e0>
+Traceback (most recent call last):
+  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 1701, in _clean_up_worker
+    w.join(timeout=_utils.MP_STATUS_CHECK_INTERVAL)
+  File "/usr/local/python3.11.10/lib/python3.11/multiprocessing/process.py", line 149, in join
+    res = self._popen.wait(timeout)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python3.11.10/lib/python3.11/multiprocessing/popen_fork.py", line 40, in wait
+    if not wait([self.sentinel], timeout):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python3.11.10/lib/python3.11/multiprocessing/connection.py", line 948, in wait
+    ready = selector.select(timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python3.11.10/lib/python3.11/selectors.py", line 415, in select
+    fd_event_list = self._selector.poll(timeout)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/z00909726/msModelSpec-Dev/src/speculators/train/graceful_shutdown.py", line 94, in _handler
+    raise TrainingInterruptedError(sig_name)
+speculators.train.graceful_shutdown.TrainingInterruptedError: SIGTERM
+/usr/local/python3.11.10/lib/python3.11/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+/usr/local/python3.11.10/lib/python3.11/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+/usr/local/python3.11.10/lib/python3.11/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+/usr/local/python3.11.10/lib/python3.11/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+/usr/local/python3.11.10/lib/python3.11/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+Exception ignored in atexit callback: <function _npu_shutdown at 0x7f956012d580>
+Traceback (most recent call last):
+  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch_npu/__init__.py", line 287, in _npu_shutdown
+    torch_npu._C._npu_shutdown(success)
+  File "/home/z00909726/msModelSpec-Dev/src/speculators/train/graceful_shutdown.py", line 94, in _handler
+    raise TrainingInterruptedError(sig_name)
+speculators.train.graceful_shutdown.TrainingInterruptedError: SIGTERM
+Exception ignored in atexit callback: <function _npu_shutdown at 0x7efc6e309580>
+Traceback (most recent call last):
+  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch_npu/__init__.py", line 287, in _npu_shutdown
+    torch_npu._C._npu_shutdown(success)
+  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/utils/data/_utils/signal_handling.py", line 73, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 311094) is killed by signal: Terminated. 
+/usr/local/python3.11.10/lib/python3.11/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+/usr/local/python3.11.10/lib/python3.11/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+E0819 16:41:02.107000 310608 site-packages/torch/distributed/elastic/multiprocessing/api.py:984] failed (exitcode: 1) local_rank: 7 (pid: 310643) of binary: /usr/local/python3.11.10/bin/python3.11
+Traceback (most recent call last):
+  File "/usr/local/python3.11.10/bin/torchrun", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/distributed/run.py", line 991, in main
+    run(args)
+  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/distributed/run.py", line 982, in run
+    elastic_launch(
+  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/distributed/launcher/api.py", line 170, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/distributed/launcher/api.py", line 317, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+scripts/train.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-08-19_16:41:02
+  host      : node-5-58
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 310636)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[2]:
+  time      : 2026-08-19_16:41:02
+  host      : node-5-58
+  rank      : 1 (local_rank: 1)
+  exitcode  : -15 (pid: 310637)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 310637
+[3]:
+  time      : 2026-08-19_16:41:02
+  host      : node-5-58
+  rank      : 2 (local_rank: 2)
+  exitcode  : -15 (pid: 310638)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 310638
+[4]:
+  time      : 2026-08-19_16:41:02
+  host      : node-5-58
+  rank      : 3 (local_rank: 3)
+  exitcode  : -15 (pid: 310639)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 310639
+[5]:
+  time      : 2026-08-19_16:41:02
+  host      : node-5-58
+  rank      : 4 (local_rank: 4)
+  exitcode  : -15 (pid: 310640)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 310640
+[6]:
+  time      : 2026-08-19_16:41:02
+  host      : node-5-58
+  rank      : 5 (local_rank: 5)
+  exitcode  : 1 (pid: 310641)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[7]:
+  time      : 2026-08-19_16:41:02
+  host      : node-5-58
+  rank      : 6 (local_rank: 6)
+  exitcode  : -15 (pid: 310642)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 310642
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-08-19_16:40:57
+  host      : node-5-58
+  rank      : 7 (local_rank: 7)
+  exitcode  : 1 (pid: 310643)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+[ERROR] 2026-08-19-16:41:02 (PID:310608, Device:-1, RankID:-1) ERR99999 UNKNOWN applicaiton exception
+Stopping target vLLM pid=310594
