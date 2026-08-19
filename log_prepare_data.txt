@@ -1,0 +1,27 @@
+root@node-5-58:/home/z00909726/dspark_train_online# MAX_SAMPLES=5000 bash 01_prepare_data.sh \
+  2>&1 | tee work/logs/prepare_5k.log
+tee: work/logs/prepare_5k.log: No such file or directory
+[1/4] Normalizing ALLaVA-4V
+written=1000 skipped=0 media=1000
+written=2000 skipped=0 media=2000
+written=3000 skipped=0 media=3000
+written=4000 skipped=0 media=4000
+written=5000 skipped=0 media=5000
+DONE output=/home/z00909726/scripts/qwen36_dspark/work/dataset/conversations.jsonl written=5000 skipped=0 media=5000
+[2/4] Preparing tokens, loss masks, multimodal messages and token frequencies
+2026-08-19 15:41:19,725 - torch_npu.env - INFO - get env LANG = C.UTF-8
+2026-08-19 15:41:19,726 - __main__ - INFO - ━━━━━━━━━━━━━━━━━━
+2026-08-19 15:41:19,727 - __main__ - INFO -   Preparing data
+2026-08-19 15:41:19,727 - __main__ - INFO - ━━━━━━━━━━━━━━━━━━
+2026-08-19 15:41:19,727 - __main__ - INFO -   Target Model │ /home/z00909726/weights/Qwen3.6-35B-A3B
+2026-08-19 15:41:19,727 - __main__ - INFO -   Dataset      │ ['/home/z00909726/scripts/qwen36_dspark/work/dataset/conversations.jsonl']
+2026-08-19 15:41:19,727 - __main__ - INFO -   Output Dir   │ /home/z00909726/scripts/qwen36_dspark/work/prepared
+Traceback (most recent call last):
+  File "/home/z00909726/msModelSpec-Dev/scripts/prepare_data.py", line 239, in <module>
+    main()
+  File "/home/z00909726/msModelSpec-Dev/scripts/prepare_data.py", line 212, in main
+    assert_safe_to_overwrite(output, token_freq_path)
+  File "/home/z00909726/msModelSpec-Dev/scripts/prepare_data.py", line 72, in assert_safe_to_overwrite
+    raise ValueError(
+ValueError: --overwrite would delete files that do not look like prepare_data.py artifacts: /home/z00909726/scripts/qwen36_dspark/work/prepared/hidden_states. Remove them manually or choose a different --output directory.
+[ERROR] 2026-08-19-15:41:19 (PID:306274, Device:-1, RankID:-1) ERR99999 UNKNOWN applicaiton exception
