@@ -7,7 +7,7 @@ Qwen3.6 vLLM 服务实时生成 verifier hidden states，训练进程读取后�
 ALLaVA-4V
   -> conversations.jsonl
   -> prepare_data (input_ids/loss_mask/messages/token_freq)
-  -> target vLLM extract_hidden_states
+  -> serial proxy -> target vLLM extract_hidden_states
   -> DSpark online train
   -> checkpoint_best
   -> vLLM target + DSpark speculative decoding
@@ -27,8 +27,10 @@ vLLM 必须在整个训练和验证阶段持续运行。
 | `02_build_draft_config.py` | 生成3层、1-D RoPE 的纯文本 Qwen3 DSpark decoder config |
 | `02_inspect_prepared_data.py` | 检查 token/loss mask，并统计长度和有效 assistant tokens |
 | `03_launch_target_vllm.sh` | 启动 target hidden-state vLLM 服务 |
+| `03a_serial_vllm_proxy.py` | 串行化多个FSDP rank的hidden-state请求 |
+| `03b_launch_serial_proxy.sh` | 启动本地串行代理（默认8001端口） |
 | `04_train_online.sh` | `on-missing=generate` 在线训练 DSpark |
-| `run_online_training.sh` | 后台启动 target、训练、退出时清理 target 服务 |
+| `run_online_training.sh` | 后台启动 target和代理、训练、退出时清理服务 |
 | `05_serve_dspark.sh` | 使用 `checkpoint_best` 启动投机推理服务 |
 | `06_test_multimodal.py` | 从 prepared dataset 取一条图片样本测试服务 |
 
@@ -84,8 +86,10 @@ ONLINE_FSDP_SHARD=1
 ONLINE_MAX_ANCHORS=512
 ```
 
-8个训练rank会产生在线hidden-state请求，但target服务由`max_num_seqs=1`限制为
-单序列调度。先完成20步smoke；若出现NaN，不要继续扩大训练。
+8个训练rank会同时产生在线hidden-state请求。只设置`max_num_seqs=1`仍不足以
+规避当前Ascend链路的并发NaN，所以训练端默认连接到8001端口的本地代理；代理
+每次只向8000端口的target转发一条生成请求，并等待safetensors写入锁释放后才
+放行下一条。这会降低hidden-state生成吞吐，但保留8卡FSDP的训练内存分片。
 
 如果512 anchors仍然OOM，继续降到256：
 
@@ -154,7 +158,7 @@ SKIP_INVALID_SOURCE_ROWS=1 MAX_SAMPLES=5000 bash 01_prepare_data.sh
 
 ## 6. 启动 target hidden-state vLLM
 
-推荐使用两个终端，以便分别观察 target 和训练日志。
+手动启动时使用三个终端，以便分别观察target、代理和训练日志。
 
 终端A：
 
@@ -183,11 +187,25 @@ curl http://127.0.0.1:8000/health
 curl http://127.0.0.1:8000/v1/models
 ```
 
+终端B（target ready后启动）：
+
+```bash
+cd /home/z00909726/scripts/qwen36_dspark_online
+source ./common_env.sh
+bash 03b_launch_serial_proxy.sh 2>&1 | tee "${LOG_DIR}/serial_proxy.log"
+```
+
+确认训练使用的代理端口正常：
+
+```bash
+curl http://127.0.0.1:8001/v1/models
+```
+
 不要在 target 服务仍运行时启动最终 DSpark serving；二者会争用同一组卡。
 
 ## 7. 在线训练
 
-终端B：
+终端C：
 
 ```bash
 cd /home/z00909726/scripts/qwen36_dspark_online
@@ -212,7 +230,9 @@ on_missing            = generate
 on_generate           = delete
 ```
 
-`on_generate=delete` 表示 hidden states 被当前 batch 使用后删除，节省磁盘。训练
+`04_train_online.sh`默认请求`http://127.0.0.1:8001/v1`，不要将它改回target的
+8000端口，否则8个rank会再次并发请求。`on_generate=delete`表示hidden states
+被当前 batch 使用后删除，节省磁盘。训练
 中断后可以从 checkpoint 恢复，但缺失 hidden states 会重新在线生成。
 
 也可以一条命令自动管理 target 服务：
@@ -221,8 +241,8 @@ on_generate           = delete
 bash run_online_training.sh
 ```
 
-该命令假设已经完成 `01_prepare_data.sh`。target 日志和训练日志保存在
-`work/logs/`。
+该命令假设已经完成 `01_prepare_data.sh`。target、serial proxy和训练日志保存
+在`work/logs/`。
 
 ### 先做最小 smoke test
 
@@ -288,9 +308,12 @@ python3 06_test_multimodal.py \
 
 ### hidden states 出现 NaN
 
-先保持默认单训练进程、`max_num_seqs=1`、eager、关闭 async/AIV/prefix cache。
-如果仍出现 NaN，记录失败样本索引和 target vLLM 的第一段 traceback。在线模式
-遇到 NaN 会停止训练，这是为了避免使用损坏的 verifier target；不要静默训练。
+若各rank在`_maybe_generate_hs -> check_hidden_states`失败，而epoch仍是0%，这是
+target生成的verifier hidden states已经含NaN，不是DSpark loss/梯度NaN。
+确认8001代理已启动，并在训练日志核对`--vllm-endpoint`指向8001。代理日志应显示
+生成请求一条一条完成。若串行后仍只有固定样本NaN，再用该样本索引做单请求重复
+诊断，同时检查target vLLM日志的第一段traceback。不要静默跳过NaN，否则各FSDP
+rank的batch数可能不一致并造成HCCL死锁。
 
 ### Prompt token IDs mismatch
 

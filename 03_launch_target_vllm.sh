@@ -9,7 +9,7 @@ if curl -sf "http://127.0.0.1:${VLLM_PORT}/health" >/dev/null 2>&1; then
 fi
 
 echo "Starting target hidden-state server on NPUs ${TARGET_NPUS} (TP=${TARGET_TP})"
-echo "Endpoint: ${VLLM_ENDPOINT}"
+echo "Target endpoint: ${TARGET_VLLM_ENDPOINT}"
 cd "${MSPEC_ROOT}"
 ASCEND_RT_VISIBLE_DEVICES="${TARGET_NPUS}" python3 scripts/launch_vllm.py \
     "${TARGET_MODEL}" \
@@ -32,4 +32,3 @@ ASCEND_RT_VISIBLE_DEVICES="${TARGET_NPUS}" python3 scripts/launch_vllm.py \
     --no-enable-prefix-caching \
     --no-async-scheduling \
     --additional-config '{"enable_cpu_binding":true}'
-

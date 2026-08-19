@@ -7,10 +7,16 @@ cd "${SCRIPT_DIR}"
 source ./common_env.sh
 
 VLLM_LOG="${LOG_DIR}/target_vllm_$(date +%Y%m%d_%H%M%S).log"
+PROXY_LOG="${LOG_DIR}/serial_proxy_$(date +%Y%m%d_%H%M%S).log"
 bash ./03_launch_target_vllm.sh >"${VLLM_LOG}" 2>&1 &
 VLLM_PID=$!
+bash ./03b_launch_serial_proxy.sh >"${PROXY_LOG}" 2>&1 &
+PROXY_PID=$!
 
 cleanup() {
+    echo "Stopping serial proxy pid=${PROXY_PID}"
+    kill -TERM "${PROXY_PID}" 2>/dev/null || true
+    wait "${PROXY_PID}" 2>/dev/null || true
     echo "Stopping target vLLM pid=${VLLM_PID}"
     kill -TERM "${VLLM_PID}" 2>/dev/null || true
     wait "${VLLM_PID}" 2>/dev/null || true
@@ -18,5 +24,5 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 echo "Target vLLM log: ${VLLM_LOG}"
+echo "Serial proxy log: ${PROXY_LOG}"
 bash ./04_train_online.sh 2>&1 | tee "${LOG_DIR}/train_online_$(date +%Y%m%d_%H%M%S).log"
-

@@ -36,6 +36,7 @@ for name in (
     "torch_npu",
     "transformers",
     "datasets",
+    "httpx",
     "openai",
     "safetensors",
     "PIL",
