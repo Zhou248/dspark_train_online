@@ -45,6 +45,7 @@ export MARKOV_RANK="${MARKOV_RANK:-32}"
 export EPOCHS="${EPOCHS:-5}"
 export LR="${LR:-3e-4}"
 export TRAIN_DATA_RATIO="${TRAIN_DATA_RATIO:-0.95}"
+export LOG_FREQ="${LOG_FREQ:-1}"
 export MAX_STEPS="${MAX_STEPS:-}"
 
 # Target uses cards 0-3. Training uses cards 8-15 with FSDP so parameters and

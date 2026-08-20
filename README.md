@@ -33,6 +33,8 @@ vLLM 必须在整个训练和验证阶段持续运行。
 | `run_online_training.sh` | 后台启动 target和代理、训练、退出时清理服务 |
 | `05_serve_dspark.sh` | 使用 `checkpoint_best` 启动投机推理服务 |
 | `06_test_multimodal.py` | 从 prepared dataset 取一条图片样本测试服务 |
+| `07_plot_loss.py` | 从训练tee日志提取loss并生成CSV和PNG曲线 |
+| `08_curl_requests.sh` | 用curl发送纯文本和图片理解请求 |
 
 ## 2. 默认路径
 
@@ -269,18 +271,55 @@ MAX_STEPS=20 bash run_online_training.sh
 
 ## 8. 扩大训练数据
 
-5k只适合验证链路。领域可用版本建议20k–50k高质量样本：
+5k只适合验证链路。不要同时大幅增加数据量和epoch；先用20k数据训练3个epoch，
+根据validation loss决定是否继续。改变数据规模时使用新的工作目录，避免从旧数据
+对应的checkpoint恢复：
 
 ```bash
+export ONLINE_WORK_DIR=/home/z00909726/scripts/qwen36_dspark_online/work_20k
 MAX_SAMPLES=20000 bash 01_prepare_data.sh
-bash run_online_training.sh
+EPOCHS=3 LOG_FREQ=1 bash run_online_training.sh
 ```
+
+如果第3个epoch的validation loss仍明显下降，再扩到5个epoch，训练脚本会从同一
+工作目录的checkpoint恢复：
+
+```bash
+export ONLINE_WORK_DIR=/home/z00909726/scripts/qwen36_dspark_online/work_20k
+EPOCHS=5 LOG_FREQ=1 bash run_online_training.sh
+```
+
+如果validation loss持平或上升，应保留`checkpoint_best`，不要继续增加epoch。
+20k链路稳定后，可以新建`work_50k`训练50k样本，建议仍从3个epoch开始。
 
 ALLaVA 原始回答不一定完全符合 target Qwen3.6 的实际输出分布。若追求更高
 speculative acceptance，后续应使用 target 模型重新生成 assistant responses，
 构造 on-policy 数据，再执行 prepare 和训练。
 
-## 9. 启动训练后的 DSpark 推理
+## 9. Loss可视化
+
+训练通过`tee`生成的`train_online_*.log`每步包含结构化train loss，每个验证epoch
+包含val loss。生成曲线和明细CSV：
+
+```bash
+cd /home/z00909726/scripts/qwen36_dspark_online
+python3 07_plot_loss.py \
+  /home/z00909726/scripts/qwen36_dspark_online/work_20k/logs/train_online_YYYYMMDD_HHMMSS.log \
+  --smooth 20
+```
+
+默认在日志旁生成：
+
+```text
+train_online_YYYYMMDD_HHMMSS_loss.png
+train_online_YYYYMMDD_HHMMSS_loss.csv
+```
+
+图中训练loss同时显示浅色原始值和移动平均值，validation loss显示离散点。若环境
+缺少绘图库，执行`pip install matplotlib`；CSV仍会先生成。`LOG_FREQ=1`表示每步
+记录一次，正式长训练若日志过大可改成`LOG_FREQ=10`。
+
+## 10. 启动训练后的 DSpark 推理
 
 先停止 target hidden-state 服务，然后：
 
@@ -304,7 +343,26 @@ python3 06_test_multimodal.py \
 
 如果未 source 环境变量，可以直接填写绝对路径。
 
-## 10. 常见问题
+也可以用一个脚本连续测试纯文本和多模态图片理解。图片会编码为data URL，因此
+客户端图片不要求位于vLLM服务器的`--allowed-local-media-path`目录中：
+
+```bash
+cd /home/z00909726/scripts/qwen36_dspark_online
+bash 08_curl_requests.sh /home/z00909726/test_images/example.jpg
+```
+
+覆盖endpoint、模型名、问题和输出长度：
+
+```bash
+API_BASE=http://127.0.0.1:8100/v1 \
+MODEL_NAME=/home/z00909726/weights/Qwen3.6-35B-A3B \
+TEXT_PROMPT="请解释DSpark。" \
+IMAGE_PROMPT="识别图片中的物体和文字。" \
+MAX_TOKENS=512 \
+bash 08_curl_requests.sh /home/z00909726/test_images/example.jpg
+```
+
+## 11. 常见问题
 
 ### hidden states 出现 NaN
 

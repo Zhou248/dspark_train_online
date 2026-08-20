@@ -82,6 +82,7 @@ ASCEND_RT_VISIBLE_DEVICES="${TRAIN_NPUS}" torchrun \
     --max-retries 3 \
     --num-workers 1 \
     --prefetch-factor 1 \
+    --log-freq "${LOG_FREQ}" \
     --log-dir "${LOG_DIR}" \
     "${FSDP_ARGS[@]}" \
     "${TRAIN_LIMIT_ARGS[@]}"
