@@ -35,6 +35,7 @@ vLLM 必须在整个训练和验证阶段持续运行。
 | `06_test_multimodal.py` | 从 prepared dataset 取一条图片样本测试服务 |
 | `07_plot_loss.py` | 从训练tee日志提取loss并生成CSV和PNG曲线 |
 | `08_curl_requests.sh` | 用curl发送纯文本和图片理解请求 |
+| `09_patch_ascend_dspark_vocab.py` | 修复旧vLLM-Ascend的缩减词表bias维度错误 |
 
 ## 2. 默认路径
 
@@ -416,4 +417,15 @@ FSDP只分片参数/梯度/优化器，不分片attention矩阵，所以降低an
 启动日志中的resolved speculative config也应显示parallel drafting已启用。若当前
 vLLM拒绝该字段或仍进入`_run_merged_draft`循环，说明服务器上的vLLM与
 vLLM-Ascend版本不配套，需要同步到包含Qwen3 DSpark reduced-vocab映射支持的配套
-版本，不能只升级其中一个仓库。
+版本，不能只升级其中一个仓库。如果暂时不能整体升级，先停止全部vLLM进程，再对
+当前Python实际导入的vLLM-Ascend执行兼容补丁：
+
+```bash
+cd /home/z00909726/scripts/qwen36_dspark_online
+python3 09_patch_ascend_dspark_vocab.py --check
+python3 09_patch_ascend_dspark_vocab.py
+```
+
+`--check`在尚未修复时返回非零是预期行为。补丁会为原文件创建
+`.bak_dspark_vocab`备份，并且重复运行不会重复修改。补丁后必须重新启动
+`05_serve_dspark.sh`；只重发curl无效，因为原EngineCore已经崩溃。
