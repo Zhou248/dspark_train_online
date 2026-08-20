@@ -1,135 +1,75 @@
- MAX_STEPS=20 bash run_online_training.sh
-Target vLLM log: /home/z00909726/scripts/qwen36_dspark_online/work/logs/target_vllm_20260819_162819.log
-Waiting for target vLLM at http://127.0.0.1:8000/v1
-Online training NPUs=8 nproc=1
-Generated hidden states are consumed immediately and deleted.
-Smoke-test limit: MAX_STEPS=20
-           INFO     get env TERM = xterm-256color                                                                                                                                                                                                                            patch_getenv.py:15
-[16:29:11] INFO     get env RANK = 0                                                                                                                                                                                                                                         patch_getenv.py:15
-           INFO     get env LOCAL_RANK = 0                                                                                                                                                                                                                                   patch_getenv.py:15
-[16:29:12] INFO     get env WORLD_SIZE = 1                                                                                                                                                                                                                                   patch_getenv.py:15
-           INFO     get env MASTER_ADDR = node-5-58                                                                                                                                                                                                                          patch_getenv.py:15
-           INFO     get env MASTER_PORT = 34819                                                                                                                                                                                                                              patch_getenv.py:15
-           INFO     get env TORCHELASTIC_USE_AGENT_STORE = True                                                                                                                                                                                                              patch_getenv.py:15
-           INFO     Started distributed with local_rank=0, dp_size=1, sp_size=1                                                                                                                                                                                              distributed.py:163
-           INFO     No vocab mappings provided. Regenerating from token frequencies                                                                                                                                                                                                train.py:332
-[16:29:13] INFO     Caching vocab mapping files to '/home/z00909726/scripts/qwen36_dspark_online/work/prepared'                                                                                                                                                                    train.py:350
-           INFO     get env LD_LIBRARY_PATH =                                                                                                                                                                                                                                patch_getenv.py:15
-                    /usr/local/Ascend/cann-9.1.0/lib64:/usr/local/Ascend/cann-9.1.0/runtime/lib64:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver:/usr/local/Ascend/cann-9.1.0/lib64:/usr/local/Ascend/cann-9.1.0/runtime/lib64:/usr/local/Ascen                   
-                    d/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver:/usr/local/Ascend/nnal/atb/latest/atb/cxx_abi_0/lib:/usr/local/Ascend/nnal/atb/latest/atb/cxx_abi_0/examples:/usr/local/Ascend/nnal/atb/latest/atb/cxx_abi_0/tests/atbopstest:/usr/local/Asc                   
-                    end/ascend-toolkit/latest/tools/aml/lib64:/usr/local/Ascend/ascend-toolkit/latest/tools/aml/lib64/plugin:/usr/local/Ascend/ascend-toolkit/latest/lib64:/usr/local/Ascend/ascend-toolkit/latest/lib64/plugin/opskernel:/usr/local/Ascend/ascend-toolkit/l                   
-                    atest/lib64/plugin/nnengine:/usr/local/Ascend/ascend-toolkit/latest/opp/built-in/op_impl/ai_core/tbe/op_tiling:/usr/local/Ascend/driver/lib64/common/:/usr/local/Ascend/driver/lib64/driver/:/usr/local/Ascend/nnal/atb/latest/atb/cxx_abi_0/lib:/usr/lo                   
-                    cal/Ascend/nnal/atb/latest/atb/cxx_abi_0/examples:/usr/local/Ascend/nnal/atb/latest/atb/cxx_abi_0/tests/atbopstest:/usr/local/Ascend/ascend-toolkit/latest/tools/aml/lib64:/usr/local/Ascend/ascend-toolkit/latest/tools/aml/lib64/plugin:/usr/local/Asc                   
-                    end/ascend-toolkit/latest/lib64/plugin/nnengine:/usr/local/Ascend/ascend-toolkit/latest/opp/built-in/op_impl/ai_core/tbe/op_tiling/lib/linux/:/usr/local/Ascend/ascend-toolkit/latest/lib64:/usr/local/Ascend/ascend-toolkit/latest/lib64/plugin/opskern                   
-                    el:/usr/local/Ascend/driver/lib64/driver:/usr/local/Ascend/driver/lib64/common:/usr/local/lib::/usr/local/Ascend/driver/lib64/driver:/usr/local/Ascend/driver/lib64/common:/usr/local/lib::/usr/local/Ascend/ascend-toolkit/latest/x86_64-linux/devlib                     
-[16:29:14] WARNING  Added <|MASK|> to tokenizer, mask_token_id=248077 (tokenizer len=248078, vocab_size=248320)                                                                                                                                                                     utils.py:49
-2026-08-19 16:29:19.175 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
-2026-08-19 16:29:19.176 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
-2026-08-19 16:29:19.176 | INFO     | speculators.utils.loading:_resolve_file:150 - Loading from local directory: /home/z00909726/weights/Qwen3.6-35B-A3B
-[16:29:21] INFO     No previous training checkpoint found in '/home/z00909726/scripts/qwen36_dspark_online/work/checkpoints'. Starting fresh training run.                                                                                                                       trainer.py:262
-[rank0]:[W819 16:29:22.181564187 TensorFactories.cpp:340] Warning: Cannot create tensor with interal format while allow_internel_format=False, tensor will be created with base format. (function operator())
-[16:29:22] INFO     Training epoch 1/5 started                                                                                                                                                                                                                                   trainer.py:642
-[rank:0]:[310331] [2026-08-19 16:29:57:983] torch_npu.memory: [ERROR] [310331] NPU out of memory. Tried to allocate 32.81 GiB (NPU 0; 60.96 GiB total capacity; 58.52 GiB already allocated; 58.52 GiB current active; 1.89 GiB free; 58.62 GiB reserved in total by PyTorch).If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.
-Epoch 0   0%                                                                                                                                                                                                                                            0/1,073  [ 0:00:35 < -:--:-- , ? it/s ]
-[rank0]: Traceback (most recent call last):
-[rank0]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 694, in <module>
-[rank0]:     main(TrainConfig.resolve())
-[rank0]:   File "/home/z00909726/msModelSpec-Dev/scripts/train.py", line 683, in main
-[rank0]:     trainer.run_training()
-[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/graceful_shutdown.py", line 118, in wrapper
-[rank0]:     return fn(self, *args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 643, in run_training
-[rank0]:     self.train_epoch(epoch)
-[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/train/trainer.py", line 463, in train_epoch
-[rank0]:     _draft_tokens, loss, metrics = self.model(
-[rank0]:                                    ^^^^^^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
-[rank0]:     return forward_call(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/nn/parallel/distributed.py", line 1666, in forward
-[rank0]:     else self._run_ddp_forward(*inputs, **kwargs)
-[rank0]:          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/nn/parallel/distributed.py", line 1492, in _run_ddp_forward
-[rank0]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
-[rank0]:     return forward_call(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/models/dspark/core.py", line 129, in forward
-[rank0]:     self._backbone_forward(
-[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/models/dflash/core.py", line 400, in _backbone_forward
-[rank0]:     noise_embedding = layer(
-[rank0]:                       ^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/transformers/modeling_layers.py", line 110, in __call__
-[rank0]:     return super().__call__(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
-[rank0]:     return forward_call(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/models/dflash/model_definitions.py", line 191, in forward
-[rank0]:     hidden_states = self.self_attn(
-[rank0]:                     ^^^^^^^^^^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
-[rank0]:     return forward_call(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/home/z00909726/msModelSpec-Dev/src/speculators/models/dflash/model_definitions.py", line 142, in forward
-[rank0]:     attn_output, attn_weights = attn_fn(
-[rank0]:                                 ^^^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py", line 213, in eager_attention_forward
-[rank0]:     attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query.dtype)
-[rank0]:                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/nn/functional.py", line 2159, in softmax
-[rank0]:     ret = input.softmax(dim, dtype=dtype)
-[rank0]:           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]: torch.OutOfMemoryError: NPU out of memory. Tried to allocate 32.81 GiB (NPU 0; 60.96 GiB total capacity; 58.52 GiB already allocated; 58.52 GiB current active; 1.89 GiB free; 58.62 GiB reserved in total by PyTorch).If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.
-[ERROR] 2026-08-19-16:30:04 (PID:310331, Device:0, RankID:-1) ERR99999 UNKNOWN applicaiton exception
-/usr/local/python3.11.10/lib/python3.11/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
-  warnings.warn('resource_tracker: There appear to be %d '
-E0819 16:30:08.167000 310307 site-packages/torch/distributed/elastic/multiprocessing/api.py:984] failed (exitcode: 1) local_rank: 0 (pid: 310331) of binary: /usr/local/python3.11.10/bin/python3.11
+FULL_VOCAB_WORK_DIR=/home/z00909726/scripts/qwen36_dspark_online/work_full_vocab_200k FULL_VOCAB_MAX_SAMPLES=200000 bash 10_full_vocab_experiment.sh prepare 2>&1 | tee full_vocab_prepare_200k.log
+Preparing full-vocab formal run: samples=200000
+[1/4] Normalizing ALLaVA-4V
+/usr/local/python3.11.10/lib/python3.11/site-packages/PIL/TiffImagePlugin.py:950: UserWarning: Corrupt EXIF data.  Expecting to read 12 bytes but only got 10. 
+  warnings.warn(str(msg))
+RESIZE source_index=0: 1440x864->1322x793
+RESIZE source_index=3: 960x1242->900x1165
+RESIZE source_index=9: 1848x1452->1155x908
+RESIZE source_index=10: 1920x2484->900x1165
+RESIZE source_index=11: 1280x1080->1115x941
+RESIZE source_index=15: 2176x2801->903x1162
+RESIZE source_index=16: 1794x950->1407x745
+RESIZE source_index=19: 1600x850->1405x746
+RESIZE source_index=20: 2081x1383->1256x835
+RESIZE source_index=27: 1323x834->1290x813
+RESIZE source_index=28: 800x3309->495x2048
+RESIZE source_index=32: 800x2208->616x1701
+RESIZE source_index=34: 1650x1275->1165x900
+RESIZE source_index=37: 2048x1310->1280x819
+RESIZE source_index=39: 1600x900->1365x768
+RESIZE source_index=46: 1200x1200->1024x1024
+RESIZE source_index=56: 1171x1574->883x1187
+RESIZE source_index=57: 1440x900->1295x810
+RESIZE source_index=60: 1920x700->1696x618
+RESIZE source_index=63: 1920x1080->1365x768
+written=1000 skipped=0 media=1000 resized=219
+written=2000 skipped=0 media=2000 resized=401
+written=3000 skipped=0 media=3000 resized=550
+written=4000 skipped=0 media=4000 resized=726
+written=5000 skipped=0 media=5000 resized=930
+written=6000 skipped=0 media=6000 resized=1130
+written=7000 skipped=0 media=7000 resized=1316
+written=8000 skipped=0 media=8000 resized=1513
+written=9000 skipped=0 media=9000 resized=1680
+written=10000 skipped=0 media=10000 resized=1866
+written=11000 skipped=0 media=11000 resized=2050
+written=12000 skipped=0 media=12000 resized=2245
+written=13000 skipped=0 media=13000 resized=2425
+written=14000 skipped=0 media=14000 resized=2613
+written=15000 skipped=0 media=15000 resized=2811
+written=16000 skipped=0 media=16000 resized=2982
+written=17000 skipped=0 media=17000 resized=3156
+written=18000 skipped=0 media=18000 resized=3328
+written=19000 skipped=0 media=19000 resized=3512
+written=20000 skipped=0 media=20000 resized=3700
+written=21000 skipped=0 media=21000 resized=3865
+written=22000 skipped=0 media=22000 resized=4061
+written=23000 skipped=0 media=23000 resized=4239
+written=24000 skipped=0 media=24000 resized=4407
 Traceback (most recent call last):
-  File "/usr/local/python3.11.10/bin/torchrun", line 8, in <module>
-    sys.exit(main())
-             ^^^^^^
-  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
-    return f(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^
-  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/distributed/run.py", line 991, in main
-    run(args)
-  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/distributed/run.py", line 982, in run
-    elastic_launch(
-  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/distributed/launcher/api.py", line 170, in __call__
-    return launch_agent(self._config, self._entrypoint, list(args))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/python3.11.10/lib/python3.11/site-packages/torch/distributed/launcher/api.py", line 317, in launch_agent
-    raise ChildFailedError(
-torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
-============================================================
-scripts/train.py FAILED
-------------------------------------------------------------
-Failures:
-  <NO_OTHER_FAILURES>
-------------------------------------------------------------
-Root Cause (first observed failure):
-[0]:
-  time      : 2026-08-19_16:30:08
-  host      : node-5-58
-  rank      : 0 (local_rank: 0)
-  exitcode  : 1 (pid: 310331)
-  error_file: <N/A>
-  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
-============================================================
-[ERROR] 2026-08-19-16:30:08 (PID:310307, Device:-1, RankID:-1) ERR99999 UNKNOWN applicaiton exception
-Stopping target vLLM pid=310293
+  File "/home/z00909726/dspark_train_online/./01_normalize_allava.py", line 260, in main
+    resized, changes = bound_row_images(
+                       ^^^^^^^^^^^^^^^^^
+  File "/home/z00909726/dspark_train_online/./01_normalize_allava.py", line 216, in bound_row_images
+    bounded, changed, before, after = resize_image(
+                                      ^^^^^^^^^^^^^
+  File "/home/z00909726/dspark_train_online/./01_normalize_allava.py", line 171, in resize_image
+    image = ImageOps.exif_transpose(raw_image)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python3.11.10/lib/python3.11/site-packages/PIL/ImageOps.py", line 699, in exif_transpose
+    image_exif = image.getexif()
+                 ^^^^^^^^^^^^^^^
+  File "/usr/local/python3.11.10/lib/python3.11/site-packages/PIL/Image.py", line 1542, in getexif
+    xmp_tags = xmp_tags.decode("utf-8")
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xbc in position 5518: invalid start byte
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/z00909726/dspark_train_online/./01_normalize_allava.py", line 295, in <module>
+    main()
+  File "/home/z00909726/dspark_train_online/./01_normalize_allava.py", line 272, in main
+    raise RuntimeError(f"Invalid source row {source_index}: {exc}") from exc
+RuntimeError: Invalid source row 24633: 'utf-8' codec can't decode byte 0xbc in position 5518: invalid start byte
