@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import warnings
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
@@ -168,7 +169,19 @@ def resize_image(
 ) -> tuple[Path, bool, tuple[int, int], tuple[int, int]]:
     """Copy an oversized image to a bounded RGB JPEG without touching source."""
     with Image.open(source) as raw_image:
-        image = ImageOps.exif_transpose(raw_image)
+        metadata_invalid = False
+        try:
+            image = ImageOps.exif_transpose(raw_image)
+        except (OSError, SyntaxError, UnicodeError, ValueError) as exc:
+            # Some ALLaVA images have valid pixels but malformed EXIF/XMP.
+            # Preserve the sample by dropping metadata and writing a clean copy.
+            metadata_invalid = True
+            warnings.warn(
+                f"Ignoring corrupt EXIF/XMP metadata in {source}: {exc}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            image = raw_image.copy()
         original_size = image.size
         width, height = original_size
         scale = min(
@@ -176,14 +189,17 @@ def resize_image(
             math.sqrt(max_pixels / max(width * height, 1)),
             max_side / max(width, height, 1),
         )
-        if scale >= 1.0:
+        if scale >= 1.0 and not metadata_invalid:
             return source, False, original_size, original_size
 
-        target_size = (
-            max(1, round(width * scale)),
-            max(1, round(height * scale)),
-        )
-        image = image.resize(target_size, Image.Resampling.LANCZOS)
+        if scale < 1.0:
+            target_size = (
+                max(1, round(width * scale)),
+                max(1, round(height * scale)),
+            )
+            image = image.resize(target_size, Image.Resampling.LANCZOS)
+        else:
+            target_size = original_size
         if image.mode != "RGB":
             if "A" in image.getbands():
                 background = Image.new("RGB", image.size, "white")
@@ -193,7 +209,7 @@ def resize_image(
                 image = image.convert("RGB")
         destination.parent.mkdir(parents=True, exist_ok=True)
         image.save(destination, format="JPEG", quality=95, optimize=True)
-        return destination, True, original_size, target_size
+        return destination, scale < 1.0, original_size, target_size
 
 
 def bound_row_images(
