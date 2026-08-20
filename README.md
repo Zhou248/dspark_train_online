@@ -329,7 +329,8 @@ bash 05_serve_dspark.sh 2>&1 | tee "${LOG_DIR}/dspark_serve.log"
 ```
 
 服务默认监听 `8100`，并保持 eager 模式。训练的 `BLOCK_SIZE=7` 必须与推理的
-`num_speculative_tokens=7` 一致。
+`num_speculative_tokens=7` 一致。启动配置显式设置`parallel_drafting=true`，确保
+DSpark一次并行提出整个block；不要删除该参数。
 
 另一个终端执行：
 
@@ -405,3 +406,14 @@ FSDP只分片参数/梯度/优化器，不分片attention矩阵，所以降低an
 
 `scripts/train.py` 默认检查已有 checkpoint 并恢复。若要从头训练，请使用新的
 `ONLINE_WORK_DIR/ONLINE_CKPT_DIR`；不要直接删除仍需保留的 checkpoint。
+
+### 推理时报32000与248320维度不匹配
+
+如果栈在`llm_base_proposer.py`的`logits[:, idx].add_(logits_bias)`失败，说明
+缩减词表为32000的DSpark被错误送入旧的逐token merged-draft路径，而target词表为
+248320。这不是curl或checkpoint损坏，也不需要重新训练成完整词表。确认
+`05_serve_dspark.sh`的speculative config包含`"parallel_drafting":true`。重启后
+启动日志中的resolved speculative config也应显示parallel drafting已启用。若当前
+vLLM拒绝该字段或仍进入`_run_merged_draft`循环，说明服务器上的vLLM与
+vLLM-Ascend版本不配套，需要同步到包含Qwen3 DSpark reduced-vocab映射支持的配套
+版本，不能只升级其中一个仓库。

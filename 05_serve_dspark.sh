@@ -29,6 +29,6 @@ ASCEND_RT_VISIBLE_DEVICES="${TARGET_NPUS}" python3 -m vllm.entrypoints.cli.main 
         \"method\":\"dspark\",
         \"model\":\"${BEST_CKPT}\",
         \"num_speculative_tokens\":${BLOCK_SIZE},
+        \"parallel_drafting\":true,
         \"draft_sample_method\":\"greedy\"
     }"
-
