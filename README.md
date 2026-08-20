@@ -36,6 +36,7 @@ vLLM 必须在整个训练和验证阶段持续运行。
 | `07_plot_loss.py` | 从训练tee日志提取loss并生成CSV和PNG曲线 |
 | `08_curl_requests.sh` | 用curl发送纯文本和图片理解请求 |
 | `09_patch_ascend_dspark_vocab.py` | 修复旧vLLM-Ascend的缩减词表bias维度错误 |
+| `10_full_vocab_experiment.sh` | 使用248320完整词表做隔离的训练实验 |
 
 ## 2. 默认路径
 
@@ -296,6 +297,39 @@ EPOCHS=5 LOG_FREQ=1 bash run_online_training.sh
 ALLaVA 原始回答不一定完全符合 target Qwen3.6 的实际输出分布。若追求更高
 speculative acceptance，后续应使用 target 模型重新生成 assistant responses，
 构造 on-policy 数据，再执行 prepare 和训练。
+
+### 248320完整词表实验
+
+完整词表实验与32000词表训练使用不同工作目录。由于词表扩大7.76倍，默认将
+`MAX_ANCHORS`从512降到64，先运行200条数据、20步的完整smoke：
+
+```bash
+cd /home/z00909726/scripts/qwen36_dspark_online
+bash 10_full_vocab_experiment.sh smoke
+```
+
+确认没有OOM、NaN且能保存checkpoint后，准备20k正式数据并训练3个epoch：
+
+```bash
+bash 10_full_vocab_experiment.sh prepare
+bash 10_full_vocab_experiment.sh train
+```
+
+默认目录分别是`work_full_vocab_smoke`和`work_full_vocab_20k`。可覆盖样本量：
+
+```bash
+FULL_VOCAB_MAX_SAMPLES=50000 bash 10_full_vocab_experiment.sh prepare
+FULL_VOCAB_EPOCHS=3 bash 10_full_vocab_experiment.sh train
+```
+
+如果64 anchors仍然OOM，使用32重新执行smoke：
+
+```bash
+FULL_VOCAB_MAX_ANCHORS=32 bash 10_full_vocab_experiment.sh smoke
+```
+
+完整词表checkpoint的LM head和Markov bias都是248320维，不需要d2t缩减词表映射；
+代价是训练显存、计算量、checkpoint大小和推理draft开销都会明显增加。
 
 ## 9. Loss可视化
 
